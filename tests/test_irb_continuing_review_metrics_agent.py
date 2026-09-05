@@ -3,8 +3,13 @@ Automated Pytest Test Suite for Irb Continuing Review Metrics Agent.
 Domain: Clinical & Biomedical AI
 Standard: CAP / CLSI / ISO Standards
 """
+import os
 import sys
 from pathlib import Path
+
+# Set required environment variable before importing project modules
+os.environ.setdefault("AUDIT_SECRET_KEY", "test-secret-key-for-pytest-2026")
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
@@ -63,3 +68,32 @@ def test_supervisor_consensus_and_audit():
     assert main(["audit", "--task-id", "CLI-TEST-01"]) == 0
     assert main(["chat", "Explain", "specifications"]) == 0
     assert main(["verify-audit"]) == 0
+
+
+def test_input_validation_rejects_nan():
+    """NaN metric values must be rejected by model validation."""
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        SystemTaskPayload(task_id="T1", target_identifier="K1", primary_metric=float("nan"))
+
+
+def test_input_validation_rejects_inf():
+    """Inf metric values must be rejected by model validation."""
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        SystemTaskPayload(task_id="T1", target_identifier="K1", primary_metric=float("inf"))
+
+
+def test_input_validation_rejects_empty_strings():
+    """Empty or whitespace-only identifiers must be rejected."""
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        SystemTaskPayload(task_id="   ", target_identifier="K1", primary_metric=1.0)
+
+
+def test_phi_redaction():
+    """PHIGuard.redact_phi should replace PII with placeholder text."""
+    redacted = PHIGuard.redact_phi("Contact patient at 555-123-4567 or MRN-12345")
+    assert "555-123-4567" not in redacted
+    assert "MRN-12345" not in redacted
+    assert "[REDACTED_IDENTIFIER]" in redacted

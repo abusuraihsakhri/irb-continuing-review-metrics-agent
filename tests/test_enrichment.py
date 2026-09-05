@@ -1,8 +1,13 @@
 """
 Automated Pytest for irb-continuing-review-metrics-agent Enrichment Modules.
 """
+import os
 import sys
 from pathlib import Path
+
+# Set required environment variable before importing project modules
+os.environ.setdefault("AUDIT_SECRET_KEY", "test-secret-key-for-pytest-2026")
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest

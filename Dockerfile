@@ -3,7 +3,8 @@ FROM python:3.12-slim
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    AUDIT_SECRET_KEY=change-me-in-production
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \

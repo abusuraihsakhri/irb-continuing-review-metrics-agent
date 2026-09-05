@@ -1,10 +1,41 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Testing
 .pytest_cache/
-results.csv
-output.csv
-*.log
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Distribution / packaging
 dist/
 build/
 *.egg-info/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+results.csv
+output.csv
+*.log
+*.bak
