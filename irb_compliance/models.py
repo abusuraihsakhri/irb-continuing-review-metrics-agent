@@ -1,7 +1,7 @@
 """
 Data Models & Telemetry Definitions for IRB-Compliance: Institutional Review Board Protocol Safety Metric Agent.
 Domain: Human Subject Protection
-Standard: HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules)
+Standard: Illustrative threshold rules (not regulatory cutoffs)
 """
 import datetime
 import math
@@ -52,7 +52,7 @@ class AgentTelemetryAlert:
     summary: str
     technical_details: str
     actionable_remediation: str
-    standard_reference: str = "HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules)"
+    standard_reference: str = "Illustrative threshold rules (not regulatory cutoffs)"
     timestamp: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 
     def to_dict(self) -> Dict[str, Any]:

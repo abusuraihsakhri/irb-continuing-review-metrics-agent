@@ -74,7 +74,7 @@ def main(argv=None):
         dossier = coordinator.process(payload)
         print("=" * 80)
         print(f"  IRB-COMPLIANCE: INSTITUTIONAL REVIEW BOARD PROTOCOL SAFETY METRIC AGENT")
-        print(f"  Domain: Human Subject Protection | Standard: HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules)")
+        print(f"  Domain: Human Subject Protection | Standard: Illustrative threshold rules (not regulatory cutoffs)")
         print(f"  Task: {dossier['task_id']} | Status: [{dossier['overall_status']}] | Total Alerts: {dossier['total_alerts']}")
         print("=" * 80)
         for a in dossier["alerts"]:

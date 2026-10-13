@@ -31,7 +31,7 @@ python cli.py verify-audit
 python cli.py serve --host 127.0.0.1 --port 8000
 ```
 
-The core API serves `GET /health`, `GET /metrics` (JSON counters), `GET /metrics/prometheus` (Prometheus text), `POST /api/audit`, `POST /api/chat`, and `GET /api/audit/logs`. Local OpenAPI documentation is at `http://127.0.0.1:8000/docs`. The `/api/chat` mock is deterministic and does not make LLM calls.
+The core API serves `GET /health`, `GET /metrics` (JSON counters), `GET /metrics/prometheus` (Prometheus text), `POST /api/audit`, `POST /api/chat`, and `GET /api/audit/logs`. Local OpenAPI documentation is at `http://127.0.0.1:8000/docs`. The `/api/chat` mock is deterministic and does not make LLM calls. Selecting non-mock model providers raises an explicit unsupported-provider error rather than silently returning a mock response.
 
 The installed `irb-continuing-review-metrics-engine` command, `python irb_compliance_app.py`, and `python -m irb_compliance.cli` use the **separate** compliance-named example pipeline. Use `python cli.py` for the core pipeline documented above.
 

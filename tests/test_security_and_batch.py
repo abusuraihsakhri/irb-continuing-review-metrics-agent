@@ -122,3 +122,10 @@ def test_csv_formula_cells_are_escaped(tmp_path, cli):
         row = next(csv.DictReader(stream))
     assert row["target_identifier"] == "'=1+1"
     assert row["notes"] == "'@danger"
+
+def test_nonmock_llm_provider_is_not_silently_simulated():
+    from agents.llm_factory import LLMFactory
+    with pytest.raises(ValueError, match="Unsupported LLM provider"):
+        LLMFactory.create("openai")
+    response = LLMFactory.create("mock").invoke("Hello")
+    assert "no clinical or regulatory verification" in response

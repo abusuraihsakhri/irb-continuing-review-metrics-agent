@@ -15,7 +15,7 @@ def create_app():
 
         app = FastAPI(
             title="IRB-Compliance: Institutional Review Board Protocol Safety Metric Agent",
-            description="Calculates subject enrollment velocity, adverse event incident rates, protocol amendment logs, and unapproved deviations.",
+            description="Illustrative threshold and keyword rule demonstration; not a regulatory compliance evaluator.",
             version="2.0.0-FRONTIER",
         )
 
