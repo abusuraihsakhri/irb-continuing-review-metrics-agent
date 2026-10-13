@@ -3,37 +3,111 @@
   "info": {
     "title": "IRB Continuing Review Metrics Rule Demo API",
     "version": "2.0.1",
-    "description": "Deterministic rule demonstration. Not a validated regulatory decision system."
+    "description": "Rule demonstration only; thresholds are not validated regulatory cutoffs."
   },
   "paths": {
     "/health": {
       "get": {
-        "summary": "Health and version"
+        "summary": "Get service health",
+        "responses": {
+          "200": {
+            "description": "Service is running"
+          }
+        }
       }
     },
     "/metrics": {
       "get": {
-        "summary": "Process counters as JSON"
+        "summary": "Get JSON process counters",
+        "responses": {
+          "200": {
+            "description": "JSON counters"
+          }
+        }
       }
     },
     "/metrics/prometheus": {
       "get": {
-        "summary": "Prometheus-formatted process counters"
+        "summary": "Get Prometheus-formatted counters",
+        "responses": {
+          "200": {
+            "description": "Text metrics"
+          }
+        }
       }
     },
     "/api/audit": {
       "post": {
-        "summary": "Assess synthetic metrics; returns a rule dossier or validation error"
+        "summary": "Evaluate example rules",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "task_id": {
+                    "type": "string"
+                  },
+                  "target_identifier": {
+                    "type": "string"
+                  },
+                  "primary_metric": {
+                    "type": "number"
+                  },
+                  "secondary_metric": {
+                    "type": "number"
+                  },
+                  "status_descriptor": {
+                    "type": "string"
+                  },
+                  "is_critical_flag": {
+                    "type": "boolean"
+                  },
+                  "attributes": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "task_id",
+                  "target_identifier",
+                  "primary_metric"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Evaluation dossier"
+          },
+          "422": {
+            "description": "Invalid input or a prohibited identifier"
+          }
+        }
       }
     },
     "/api/chat": {
       "post": {
-        "summary": "Deterministic mock response"
+        "summary": "Deterministic mock chat",
+        "responses": {
+          "200": {
+            "description": "Mock response"
+          },
+          "422": {
+            "description": "Input rejected"
+          }
+        }
       }
     },
     "/api/audit/logs": {
       "get": {
-        "summary": "Get in-memory HMAC audit metadata and integrity check"
+        "summary": "Read and verify in-memory HMAC audit metadata",
+        "responses": {
+          "200": {
+            "description": "Audit entries and verification result"
+          }
+        }
       }
     }
   }

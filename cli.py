@@ -11,6 +11,18 @@ from agents.base import AuditLogger
 
 supervisor = SystemSupervisor(model_provider="mock")
 
+def safe_csv_row(row):
+    """Prevent spreadsheet formula execution in exported text fields."""
+    safe = {}
+    numeric_fields = {"primary_metric", "secondary_metric"}
+    for key, value in row.items():
+        if isinstance(value, str) and key not in numeric_fields:
+            if value.lstrip().startswith(("=", "+", "-", "@")):
+                value = "'" + value
+        safe[key] = value
+    return safe
+
+
 def parse_csv_bool(value):
     """Parse common CSV boolean spellings without treating 'False' as true."""
     normalized = str(value).strip().lower()
@@ -117,7 +129,7 @@ def main(argv=None):
         with open(args.output, mode="w", encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=out_fields)
             writer.writeheader()
-            writer.writerows(out_rows)
+            writer.writerows(safe_csv_row(row) for row in out_rows)
         print(f"Processed {len(out_rows)} records -> {args.output}")
         return 0
 

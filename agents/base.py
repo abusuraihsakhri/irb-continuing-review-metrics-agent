@@ -90,11 +90,11 @@ class AuditTrail:
                 "current_hash": signature,
             }
             self.logs.append(entry)
-            return entry
+            return dict(entry)
 
     def verify_integrity(self) -> bool:
+        """Validate every HMAC and predecessor link, not just chain topology."""
         with self._lock:
-            """Validate every HMAC and predecessor link, not just chain topology."""
             previous = "GENESIS_BLOCK_0000000000000000"
             for entry in self.logs:
                 try:
@@ -113,8 +113,8 @@ class AuditTrail:
             return True
 
     def get_trail(self) -> List[Dict[str, Any]]:
+        """Return detached entries; callers cannot mutate the internal chain."""
         with self._lock:
-            """Return detached entries; callers cannot mutate the internal chain."""
             return [dict(entry) for entry in self.logs]
 
 

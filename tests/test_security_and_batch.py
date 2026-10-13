@@ -97,3 +97,25 @@ def test_concurrent_audit_appends_preserve_chain():
         list(executor.map(write_one, range(100)))
     assert len(audit.get_trail()) == 100
     assert audit.verify_integrity()
+
+def test_audit_log_return_is_detached():
+    audit = AuditTrail("test-key")
+    entry = audit.log("test", "test", "CREATED", {"x": 1})
+    entry["event_type"] = "TAMPERED"
+    assert audit.verify_integrity()
+
+
+@pytest.mark.parametrize("cli", [main_cli, compliance_cli])
+def test_csv_formula_cells_are_escaped(tmp_path, cli):
+    source = tmp_path / "input.csv"
+    target = tmp_path / "output.csv"
+    source.write_text(
+        "task_id,target_identifier,primary_metric,secondary_metric,is_critical_flag,status_descriptor,notes\\n"
+        "A-1,=1+1,1,1,False,NOMINAL,@danger\\n".replace("\\n", "\n"),
+        encoding="utf-8",
+    )
+    assert cli(["batch", "-i", str(source), "-o", str(target)]) == 0
+    with target.open(newline="", encoding="utf-8") as stream:
+        row = next(csv.DictReader(stream))
+    assert row["target_identifier"] == "'=1+1"
+    assert row["notes"] == "'@danger"
