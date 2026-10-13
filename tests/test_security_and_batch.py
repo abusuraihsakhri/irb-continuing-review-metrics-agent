@@ -87,3 +87,13 @@ def test_compliance_inputs_reject_nonfinite_and_blank():
         FrontierPayload("X", "K", float("nan"), 1, "NOMINAL")
     with pytest.raises(ValueError):
         FrontierPayload("  ", "K", 1, 1, "NOMINAL")
+
+def test_concurrent_audit_appends_preserve_chain():
+    from concurrent.futures import ThreadPoolExecutor
+    audit = AuditTrail("concurrency-test-key")
+    def write_one(index):
+        return audit.log("test", "worker", "EVALUATED", {"index": index})
+    with ThreadPoolExecutor(max_workers=12) as executor:
+        list(executor.map(write_one, range(100)))
+    assert len(audit.get_trail()) == 100
+    assert audit.verify_integrity()
