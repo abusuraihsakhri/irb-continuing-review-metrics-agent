@@ -110,11 +110,11 @@ def test_csv_formula_cells_are_escaped(tmp_path, cli):
     source = tmp_path / "input.csv"
     target = tmp_path / "output.csv"
     source.write_text(
-        "\\n".join([
+        chr(10).join([
             "task_id,target_identifier,primary_metric,secondary_metric,is_critical_flag,status_descriptor,notes",
             "A-1,=1+1,1,1,False,NOMINAL,@danger",
             "",
-        ]).replace("\\\\n", "\\n"),
+        ]),
         encoding="utf-8",
     )
     assert cli(["batch", "-i", str(source), "-o", str(target)]) == 0
