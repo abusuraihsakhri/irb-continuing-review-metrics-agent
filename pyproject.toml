@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "irb-continuing-review-metrics-engine"
-version = "2.0.0"
-description = "IRB-Compliance: Institutional Review Board Protocol Safety Metric Engine"
+version = "2.0.1"
+description = "Rule-based IRB protocol metrics demonstration and evaluation utilities"
 readme = "README.md"
 authors = [{ name = "Dr. Abu Suraih Sakhri", email = "abusuraih@example.com" }]
 license = { text = "MIT" }
@@ -13,15 +13,17 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Topic :: Security/Cryptography",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 requires-python = ">=3.9"
-dependencies = []
+dependencies = ["pydantic>=2,<3"]
+
+[project.optional-dependencies]
+server = ["fastapi>=0.100,<1", "uvicorn>=0.23,<1"]
+test = ["pytest>=7,<10", "httpx>=0.24,<1", "fastapi>=0.100,<1"]
 
 [project.scripts]
 irb-continuing-review-metrics-engine = "irb_compliance.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/abusuraihsakhri/irb-continuing-review-metrics-engine"
-Repository = "https://github.com/abusuraihsakhri/irb-continuing-review-metrics-engine.git"
+Homepage = "https://github.com/abusuraihsakhri/irb-continuing-review-metrics-agent"
+Repository = "https://github.com/abusuraihsakhri/irb-continuing-review-metrics-agent"

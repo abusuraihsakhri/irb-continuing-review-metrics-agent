@@ -1,10 +1,12 @@
 """
 FastAPI REST API Server for Irb Continuing Review Metrics Agent.
 """
-from typing import Dict, Any, List
+import time
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
-from .base import AuditLogger, PHIGuard
+from .base import AuditLogger, SecurityException
+from .metrics import GLOBAL_METRICS
 from .models import SystemTaskPayload, ConsensusDossier
 from .supervisor import SystemSupervisor
 
@@ -37,8 +39,19 @@ def metrics():
 
 @app.post("/api/audit")
 def api_audit(payload: SystemTaskPayload):
-    dossier = supervisor.process_task(payload)
+    started = time.perf_counter()
+    try:
+        dossier = supervisor.process_task(payload)
+    except SecurityException:
+        GLOBAL_METRICS.record_phi_block()
+        raise HTTPException(status_code=422, detail="Input contains a prohibited identifier")
+    GLOBAL_METRICS.record_task(dossier.overall_urgency.value, time.perf_counter() - started)
     return dossier.to_dict()
+
+
+@app.get("/metrics/prometheus", response_class=PlainTextResponse)
+def prometheus_metrics():
+    return GLOBAL_METRICS.export_prometheus_text()
 
 
 @app.post("/api/chat")
@@ -46,8 +59,9 @@ def api_chat(req: ChatRequest):
     try:
         ans = supervisor.query_supervisory_chat(req.query)
         return {"response": ans}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except SecurityException:
+        GLOBAL_METRICS.record_phi_block()
+        raise HTTPException(status_code=422, detail="Input contains a prohibited identifier")
 
 
 @app.get("/api/audit/logs")
