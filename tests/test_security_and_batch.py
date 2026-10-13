@@ -80,3 +80,10 @@ def test_api_phi_rejection_and_prometheus_counters():
     assert result.status_code == 200
     assert "text/plain" in result.headers["content-type"]
     assert "phi_outbound_blocks_total" in result.text
+
+def test_compliance_inputs_reject_nonfinite_and_blank():
+    from irb_compliance.models import FrontierPayload
+    with pytest.raises(ValueError):
+        FrontierPayload("X", "K", float("nan"), 1, "NOMINAL")
+    with pytest.raises(ValueError):
+        FrontierPayload("  ", "K", 1, 1, "NOMINAL")

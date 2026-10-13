@@ -4,6 +4,7 @@ Domain: Human Subject Protection
 Standard: HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules)
 """
 import datetime
+import math
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Any
@@ -25,6 +26,22 @@ class FrontierPayload:
     is_critical_flag: bool = False
     attributes: Dict[str, Any] = field(default_factory=dict)
     timestamp: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
+
+    def __post_init__(self):
+        for name in ("task_id", "target_identifier", "status_descriptor"):
+            value = getattr(self, name)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(f"{name} must be a nonempty string")
+            max_length = 64 if name == "status_descriptor" else 128
+            if len(value.strip()) > max_length:
+                raise ValueError(f"{name} must be at most {max_length} characters")
+            setattr(self, name, value.strip())
+        for name in ("primary_metric", "secondary_metric"):
+            value = getattr(self, name)
+            if isinstance(value, bool) or not isinstance(value, (float, int)) or not math.isfinite(value):
+                raise ValueError(f"{name} must be finite")
+        if not isinstance(self.is_critical_flag, bool):
+            raise ValueError("is_critical_flag must be a boolean")
 
 
 @dataclass

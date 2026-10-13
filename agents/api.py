@@ -14,8 +14,8 @@ supervisor = SystemSupervisor(model_provider="mock")
 
 app = FastAPI(
     title="Irb Continuing Review Metrics Agent API",
-    description="Enterprise Distributed Component Platform (Clinical & Biomedical AI)",
-    version="3.0.0-ENTERPRISE",
+    description="Demonstration of configurable deterministic evaluation rules; not validated for IRB decisions",
+    version="2.0.1",
 )
 
 
@@ -25,7 +25,7 @@ class ChatRequest(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"status": "HEALTHY", "service": "irb-continuing-review-metrics-agent", "domain": "Clinical & Biomedical AI", "standard": "CAP / CLSI / ISO Standards", "version": "3.0.0-ENTERPRISE"}
+    return {"status": "HEALTHY", "service": "irb-continuing-review-metrics-agent", "domain": "Clinical & Biomedical AI", "standard": "Unvalidated demonstration rules", "version": "2.0.1"}
 
 
 @app.get("/metrics")
@@ -33,7 +33,7 @@ def metrics():
     return {
         "dossiers_processed_total": len(supervisor.dossier_registry),
         "audit_blocks_total": len(AuditLogger.get_trail()),
-        "system_status": "NOMINAL_OPTIMAL"
+        "system_status": "RUNNING"
     }
 
 

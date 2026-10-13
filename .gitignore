@@ -39,3 +39,10 @@ results.csv
 output.csv
 *.log
 *.bak
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key

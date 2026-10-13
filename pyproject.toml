@@ -27,3 +27,6 @@ irb-continuing-review-metrics-engine = "irb_compliance.cli:main"
 [project.urls]
 Homepage = "https://github.com/abusuraihsakhri/irb-continuing-review-metrics-agent"
 Repository = "https://github.com/abusuraihsakhri/irb-continuing-review-metrics-agent"
+
+[tool.setuptools.packages.find]
+include = ["agents*", "irb_compliance*"]

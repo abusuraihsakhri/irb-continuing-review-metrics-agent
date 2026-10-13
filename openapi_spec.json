@@ -1,114 +1,39 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Irb Continuing Review Metrics Engine API",
-    "description": "Enterprise Distributed Component Platform (Clinical & Cryptographic AI) adhering to CAP / CLSI / NIST Standards.",
-    "version": "3.0.0-ENTERPRISE",
-    "contact": {
-      "name": "Dr. Abu Suraih Sakhri",
-      "url": "https://github.com/abusuraihsakhri"
-    }
+    "title": "IRB Continuing Review Metrics Rule Demo API",
+    "version": "2.0.1",
+    "description": "Deterministic rule demonstration. Not a validated regulatory decision system."
   },
   "paths": {
     "/health": {
       "get": {
-        "summary": "Health and metadata check",
-        "responses": {
-          "200": {
-            "description": "System optimal"
-          }
-        }
+        "summary": "Health and version"
       }
     },
     "/metrics": {
       "get": {
-        "summary": "Prometheus operational metrics",
-        "responses": {
-          "200": {
-            "description": "Prometheus text metrics"
-          }
-        }
+        "summary": "Process counters as JSON"
+      }
+    },
+    "/metrics/prometheus": {
+      "get": {
+        "summary": "Prometheus-formatted process counters"
       }
     },
     "/api/audit": {
       "post": {
-        "summary": "Dispatch task payload across specialized workers",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "task_id": {
-                    "type": "string"
-                  },
-                  "target_identifier": {
-                    "type": "string"
-                  },
-                  "primary_metric": {
-                    "type": "number"
-                  },
-                  "secondary_metric": {
-                    "type": "number"
-                  },
-                  "status_descriptor": {
-                    "type": "string"
-                  },
-                  "is_critical_flag": {
-                    "type": "boolean"
-                  }
-                },
-                "required": [
-                  "task_id",
-                  "target_identifier",
-                  "primary_metric"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Consensus dossier with HMAC signature"
-          }
-        }
+        "summary": "Assess synthetic metrics; returns a rule dossier or validation error"
       }
     },
     "/api/chat": {
       "post": {
-        "summary": "Air-gapped supervisory conversational assistant",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "query": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "query"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Supervisory response"
-          }
-        }
+        "summary": "Deterministic mock response"
       }
     },
     "/api/audit/logs": {
       "get": {
-        "summary": "Retrieve and cryptographically verify HMAC audit trail",
-        "responses": {
-          "200": {
-            "description": "Cryptographic audit trail"
-          }
-        }
+        "summary": "Get in-memory HMAC audit metadata and integrity check"
       }
     }
   }
