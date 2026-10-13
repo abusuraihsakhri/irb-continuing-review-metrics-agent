@@ -1,7 +1,7 @@
 """
 Core Algorithmic Engine & Cryptographic / Biological Logic for IRB-Compliance: Institutional Review Board Protocol Safety Metric Agent.
 Domain: Human Subject Protection
-Standard: HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules)
+Standard: Illustrative threshold rules (not regulatory cutoffs)
 """
 import math
 from typing import Dict, Any, List, Optional
@@ -9,7 +9,7 @@ from .models import FrontierPayload, AgentTelemetryAlert, ExecutionStatus
 
 
 class FrontierDomainEngine:
-    STANDARD = "HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules)"
+    STANDARD = "Illustrative threshold rules (not regulatory cutoffs)"
     PRIMARY_BOUND = 25.0
     SECONDARY_BOUND = 10.0
 
@@ -18,8 +18,8 @@ class FrontierDomainEngine:
         if value > cls.PRIMARY_BOUND:
             return {
                 "summary": "Primary Domain Boundary Deviation",
-                "details": f"Parameter value ({value:.3f}) exceeds operational threshold ({cls.PRIMARY_BOUND:.1f}) under HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules).",
-                "remediation": "Engage parameter recalibration and algorithmic verification routine.",
+                "details": f"Parameter value ({value:.3f}) exceeds operational threshold ({cls.PRIMARY_BOUND:.1f}) under Illustrative threshold rules (not regulatory cutoffs).",
+                "remediation": "Review the source parameter and configured threshold.",
             }
         return None
 
@@ -29,7 +29,7 @@ class FrontierDomainEngine:
             return {
                 "summary": "Critical Domain Condition Triggered",
                 "details": f"Secondary index ({value:.3f}) with CriticalFlag={is_critical} demands prioritized resolution.",
-                "remediation": "Initiate automated fail-safe state machine and telemetry alert dispatch.",
+                "remediation": "Request human review of the flagged example record.",
             }
         return None
 
@@ -39,7 +39,7 @@ class FrontierDomainEngine:
         if any(flag in desc_upper for flag in ["VIOLATION", "DISCORDANT", "ANOMALY", "MUTANT", "LEAK"]):
             return {
                 "summary": "Specification / Protocol Anomaly Identified",
-                "details": f"Telemetry status flag '{descriptor}' violates HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules) conformance matrix.",
-                "remediation": "Execute automated rollback or secondary consensus verification.",
+                "details": f"Telemetry status flag '{descriptor}' matches an illustrative status keyword.",
+                "remediation": "Review the source descriptor and protocol record.",
             }
         return None

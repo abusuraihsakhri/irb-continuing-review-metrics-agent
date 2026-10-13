@@ -11,6 +11,28 @@ from agents.base import AuditLogger
 
 supervisor = SystemSupervisor(model_provider="mock")
 
+def safe_csv_row(row):
+    """Prevent spreadsheet formula execution in exported text fields."""
+    safe = {}
+    numeric_fields = {"primary_metric", "secondary_metric"}
+    for key, value in row.items():
+        if isinstance(value, str) and key not in numeric_fields:
+            if value.lstrip().startswith(("=", "+", "-", "@")):
+                value = "'" + value
+        safe[key] = value
+    return safe
+
+
+def parse_csv_bool(value):
+    """Parse common CSV boolean spellings without treating 'False' as true."""
+    normalized = str(value).strip().lower()
+    if normalized in ("true", "1", "yes", "y", "on"):
+        return True
+    if normalized in ("false", "0", "no", "n", "off", ""):
+        return False
+    raise ValueError(f"Invalid is_critical_flag value: {value!r}")
+
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="irb-continuing-review-metrics-agent", description="Irb Continuing Review Metrics Agent")
@@ -56,7 +78,7 @@ def main(argv=None):
         dossier = supervisor.process_task(payload)
         print("=" * 80)
         print(f"  IRB CONTINUING REVIEW METRICS AGENT")
-        print(f"  Domain: Clinical & Biomedical AI | Standard: CAP / CLSI / ISO Standards")
+        print(f"  Domain: Clinical & Biomedical AI | Standard: Illustrative threshold rules (not regulatory cutoffs)")
         print(f"  Dossier ID: {dossier.dossier_id} | Urgency: [{dossier.overall_urgency.value}]")
         print("=" * 80)
         for a in dossier.alerts:
@@ -85,7 +107,7 @@ def main(argv=None):
             fieldnames = list(reader.fieldnames or [])
             rows = list(reader)
 
-        out_fields = fieldnames + ["overall_urgency", "integrity_status", "total_alerts", "audit_hash"]
+        out_fields = list(dict.fromkeys(fieldnames + ["overall_urgency", "integrity_status", "total_alerts", "audit_hash"]))
         out_rows = []
         for r in rows:
             payload = SystemTaskPayload(
@@ -94,7 +116,7 @@ def main(argv=None):
                 primary_metric=float(r.get("primary_metric", 15.0)),
                 secondary_metric=float(r.get("secondary_metric", 5.0)),
                 status_descriptor=r.get("status_descriptor", "NOMINAL"),
-                is_critical_flag=bool(r.get("is_critical_flag", False)),
+                is_critical_flag=parse_csv_bool(r.get("is_critical_flag", False)),
             )
             dossier = supervisor.process_task(payload)
             row_dict = dict(r)
@@ -107,7 +129,7 @@ def main(argv=None):
         with open(args.output, mode="w", encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=out_fields)
             writer.writeheader()
-            writer.writerows(out_rows)
+            writer.writerows(safe_csv_row(row) for row in out_rows)
         print(f"Processed {len(out_rows)} records -> {args.output}")
         return 0
 

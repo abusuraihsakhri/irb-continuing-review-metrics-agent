@@ -93,7 +93,7 @@ class IRBComplianceCoordinator:
             "critical_count": crit_count,
             "warning_count": warn_count,
             "alerts": [a.to_dict() for a in all_alerts],
-            "standard_specification": "HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules)",
+            "standard_specification": "Illustrative threshold rules (not regulatory cutoffs)",
             "consensus_summary": f"Consensus evaluation completed across 3 sub-agents with status [{status.value}].",
         }
 
@@ -105,6 +105,6 @@ class IRBComplianceCoordinator:
         if "status" in q or "ledger" in q:
             return f"IRB-Compliance: Institutional Review Board Protocol Safety Metric Agent currently managing {len(self.execution_ledger)} execution tasks in air-gapped memory."
         elif "standard" in q or "spec" in q:
-            return "Active runtime operating strictly according to HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules) specifications."
+            return "The demonstration uses illustrative thresholds; regulatory specifications are not automatically validated."
         else:
-            return f"IRB-Compliance: Institutional Review Board Protocol Safety Metric Agent executive coordinator online. Zero-telemetry on-premises surveillance active."
+            return "Rule demonstration is available in memory. No continuous monitoring or regulatory validation is implemented."

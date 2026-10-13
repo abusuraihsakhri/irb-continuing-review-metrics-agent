@@ -10,6 +10,28 @@ from .agents import IRBComplianceCoordinator
 
 coordinator = IRBComplianceCoordinator()
 
+def safe_csv_row(row):
+    """Prevent spreadsheet formula execution in exported text fields."""
+    safe = {}
+    numeric_fields = {"primary_metric", "secondary_metric"}
+    for key, value in row.items():
+        if isinstance(value, str) and key not in numeric_fields:
+            if value.lstrip().startswith(("=", "+", "-", "@")):
+                value = "'" + value
+        safe[key] = value
+    return safe
+
+
+def parse_csv_bool(value):
+    """Parse common CSV boolean spellings without treating 'False' as true."""
+    normalized = str(value).strip().lower()
+    if normalized in ("true", "1", "yes", "y", "on"):
+        return True
+    if normalized in ("false", "0", "no", "n", "off", ""):
+        return False
+    raise ValueError(f"Invalid is_critical_flag value: {value!r}")
+
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="irb-continuing-review-metrics-agent", description="IRB-Compliance: Institutional Review Board Protocol Safety Metric Agent")
@@ -52,7 +74,7 @@ def main(argv=None):
         dossier = coordinator.process(payload)
         print("=" * 80)
         print(f"  IRB-COMPLIANCE: INSTITUTIONAL REVIEW BOARD PROTOCOL SAFETY METRIC AGENT")
-        print(f"  Domain: Human Subject Protection | Standard: HHS 45 CFR 46 / FDA 21 CFR 56 (IRB Rules)")
+        print(f"  Domain: Human Subject Protection | Standard: Illustrative threshold rules (not regulatory cutoffs)")
         print(f"  Task: {dossier['task_id']} | Status: [{dossier['overall_status']}] | Total Alerts: {dossier['total_alerts']}")
         print("=" * 80)
         for a in dossier["alerts"]:
@@ -74,7 +96,7 @@ def main(argv=None):
             fieldnames = list(reader.fieldnames or [])
             rows = list(reader)
 
-        out_fields = fieldnames + ["overall_status", "total_alerts", "critical_count", "consensus_summary"]
+        out_fields = list(dict.fromkeys(fieldnames + ["overall_status", "total_alerts", "critical_count", "consensus_summary"]))
         out_rows = []
         for r in rows:
             payload = FrontierPayload(
@@ -83,7 +105,7 @@ def main(argv=None):
                 primary_metric=float(r.get("primary_metric", 15.0)),
                 secondary_metric=float(r.get("secondary_metric", 5.0)),
                 status_descriptor=r.get("status_descriptor", "NOMINAL"),
-                is_critical_flag=bool(r.get("is_critical_flag", False)),
+                is_critical_flag=parse_csv_bool(r.get("is_critical_flag", False)),
             )
             dossier = coordinator.process(payload)
             row_dict = dict(r)
@@ -96,7 +118,7 @@ def main(argv=None):
         with open(args.output, mode="w", encoding="utf-8", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=out_fields)
             writer.writeheader()
-            writer.writerows(out_rows)
+            writer.writerows(safe_csv_row(row) for row in out_rows)
         print(f"Processed {len(out_rows)} records -> {args.output}")
         return 0
 
